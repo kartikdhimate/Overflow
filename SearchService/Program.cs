@@ -1,13 +1,9 @@
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
+using Common;
 using SearchService.Data;
 using SearchService.Models;
 using System.Text.RegularExpressions;
-using JasperFx.CodeGeneration;
-using JasperFx.CodeGeneration.Model;
 using Typesense;
 using Typesense.Setup;
-using Wolverine;
 using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,22 +29,13 @@ builder.Services.AddTypesenseClient(config =>
     };
 });
 
-builder.Services.AddOpenTelemetry().WithTracing(traceProviderBuilder =>
+await builder.UseWolverineWithRabbitMqAsync(opts =>
 {
-    traceProviderBuilder
-        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName))
-        .AddSource("Wolverine");
-});
-
-builder.Host.UseWolverine(opts =>
-{
-    opts.UseRabbitMqUsingNamedConnection("messaging").AutoProvision();
     opts.ListenToRabbitQueue("questions.search", cfg =>
     {
         cfg.BindExchange("questions");
     });
-    opts.UseRuntimeCompilation();
-    opts.ServiceLocationPolicy = ServiceLocationPolicy.AllowedButWarn;
+    opts.ApplicationAssembly = typeof(Program).Assembly;
 });
 
 var app = builder.Build();

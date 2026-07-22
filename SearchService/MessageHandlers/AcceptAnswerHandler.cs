@@ -9,7 +9,7 @@ public class AcceptAnswerHandler(ITypesenseClient client)
     {
         await client.UpdateDocument("questions", message.QuestionId, new
         {
-            HasAnswerAccepted = true
+            HasAcceptedAnswer = true
         });
     }
 }
