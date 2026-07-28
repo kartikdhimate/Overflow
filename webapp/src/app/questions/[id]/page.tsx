@@ -8,9 +8,10 @@ import AnswersHeader from "./AnswersHeader";
 type Params = Promise<{ id: string }>;
 
 export default async function QuestionDetailedPage({ params }: { params: Params }) {
-    const {id} = await params;
-    const question = await getQuestionsById(id);
+    const { id } = await params;
+    const { data: question, error } = await getQuestionsById(id);
 
+    if (error) throw error;
     if (!question) return notFound();
 
     return (
@@ -22,7 +23,7 @@ export default async function QuestionDetailedPage({ params }: { params: Params 
             )}
             {question.answers.map((answer) => (
                 <AnswerContent key={answer.id} answer={answer} />
-            ))} 
+            ))}
         </div>
     );
 }

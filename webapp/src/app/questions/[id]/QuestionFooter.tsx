@@ -3,6 +3,7 @@
 import { LinkComponent } from "@/components/LinkComponent";
 import { Question } from "@/lib/types";
 import { Avatar, Chip } from "@heroui/react";
+import { timeAgo } from "@/lib/util";
 
 type Props = {
     question: Question;
@@ -13,7 +14,7 @@ export default function QuestionFooter({ question }: Props) {
         <div className="flex justify-between mt-2">
             <div className="flex flex-col self-end">
                 <div className="flex gap-2">
-                    {question.tagSlugs.map((tag)=>(
+                    {question.tagSlugs.map((tag) => (
                         <Chip
                             as={LinkComponent}
                             variant="bordered"
@@ -27,14 +28,14 @@ export default function QuestionFooter({ question }: Props) {
             </div>
 
             <div className="flex flex-col basis-2/5 bg-primary/10 px-3 py-2 gap-2 rounded-lg">
-                    <span className="text-sm font-extralight">asked {question.createdAt}</span>
-                    <div className="flex items-center gap-3">
-                        <Avatar className="h-6 w-6" color="secondary" name={question.askerDisplayName.charAt(0)} />
-                        <div className="flex flex-col items-center">
-                            <span>{question.askerDisplayName}</span>
-                            <span className="self-start text-sm font-semibold">42</span>
-                        </div>
+                <span className="text-sm font-extralight">asked {timeAgo(question.createdAt)}</span>
+                <div className="flex items-center gap-3">
+                    <Avatar className="h-6 w-6" color="secondary" name={question.askerDisplayName.charAt(0)} />
+                    <div className="flex flex-col items-center">
+                        <span>{question.askerDisplayName}</span>
+                        <span className="self-start text-sm font-semibold">42</span>
                     </div>
+                </div>
             </div>
         </div>
     );

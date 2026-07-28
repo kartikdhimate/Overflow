@@ -1,4 +1,5 @@
 'use client';
+import { fuzzyTimeAgo } from "@/lib/util";
 
 import { LinkComponent } from "@/components/LinkComponent";
 import { Question } from "@/lib/types";
@@ -26,12 +27,12 @@ export default function QuestionDetailedHeader({ question }: Props) {
             <div className="flex items-center gap-6">
                 <div className="flex items-center gap-3">
                     <span className="text-foreground-500">Asked</span>
-                    <span>{question.createdAt}</span>
+                    <span>{fuzzyTimeAgo(question.createdAt)}</span>
                 </div>
                 {question.updatedAt && (
                     <div className="flex items-center gap-3">
                         <span className="text-foreground-500">Modified</span>
-                        <span>{question.updatedAt}</span>
+                        <span>{fuzzyTimeAgo(question.updatedAt)}</span>
                     </div>
                 )}
                 <div className="flex items-center gap-3">
