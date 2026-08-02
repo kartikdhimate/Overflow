@@ -55,6 +55,7 @@ var yarp = builder.AddYarp("gateway")
     .WithConfiguration(yarpConfiguration =>
     {
         yarpConfiguration.AddRoute("/questions/{**catch-all}", questionService);
+        yarpConfiguration.AddRoute("/test/{**catch-all}", questionService);
         yarpConfiguration.AddRoute("/tags/{**catch-all}", questionService);
         yarpConfiguration.AddRoute("/search/{**catch-all}", searchService);
     })

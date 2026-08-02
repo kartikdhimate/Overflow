@@ -1,3 +1,5 @@
+'use client';
+
 import { Input } from "@heroui/input";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { useRef, useState, useEffect } from "react";

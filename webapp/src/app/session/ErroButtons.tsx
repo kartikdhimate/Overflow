@@ -2,7 +2,7 @@
 
 import { triggerError } from "@/lib/actions/error-actions";
 import { handleError } from "@/lib/util";
-import { addToast, Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 import { useTransition, useState } from "react";
 
 export default function ErrorButtons() {
@@ -19,7 +19,7 @@ export default function ErrorButtons() {
     };
 
     return (
-        <div className="flex gap-6 items-center mt-6 w-full justify-center">
+        <div className="flex gap-3">
             {[400, 401, 403, 404, 500].map((code) => (
                 <Button
                     onPress={() => onClick(code)}
