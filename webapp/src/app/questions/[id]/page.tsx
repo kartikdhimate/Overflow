@@ -1,15 +1,16 @@
-import { getQuestionsById } from "@/lib/actions/question-actions";
+import { getQuestionById } from "@/lib/actions/question-actions";
 import { notFound } from "next/navigation";
 import QuestionDetailedHeader from "./QuestionDetailedHeader";
 import QuestionContent from "./QuestionContent";
 import AnswerContent from "./AnswerContent";
 import AnswersHeader from "./AnswersHeader";
+import AnswerForm from "@/app/questions/[id]/AnswerForm";
 
 type Params = Promise<{ id: string }>;
 
 export default async function QuestionDetailedPage({ params }: { params: Params }) {
     const { id } = await params;
-    const { data: question, error } = await getQuestionsById(id);
+    const { data: question, error } = await getQuestionById(id);
 
     if (error) throw error;
     if (!question) return notFound();
@@ -24,6 +25,7 @@ export default async function QuestionDetailedPage({ params }: { params: Params 
             {question.answers.map((answer) => (
                 <AnswerContent key={answer.id} answer={answer} />
             ))}
+            <AnswerForm questionId={question.id} />
         </div>
     );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { Question } from "@/lib/types"
+import { stripHtmlTags } from "@/lib/util";
 import { Chip } from "@heroui/chip";
 import { Avatar } from "@heroui/avatar";
 import Link from "next/link"
@@ -14,7 +15,7 @@ type Props = {
 
 export default function QuestionCard({ question }: Props) {
     return (
-        <div className="flex gap-6 px-6">
+        <div className="flex gap-6 px-6 w-full">
             <div className="flex flex-col items-end text-sm gap-3 min-w-24">
                 <div>{question.votes} {question.votes === 1 ? "vote" : "votes"}</div>
                 <div className={clsx('flex justify-end rounded', {
@@ -38,7 +39,7 @@ export default function QuestionCard({ question }: Props) {
             </div>
 
             <div className="flex flex-1 justify-between min-h-32">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 w-full">
                     <Link
                         href={`/questions/${question.id}`}
                         className="font-semibold text-primary hover:underline first-letter:uppercase"
@@ -47,8 +48,9 @@ export default function QuestionCard({ question }: Props) {
                     </Link>
                     <div
                         className="line-clamp-2"
-                        dangerouslySetInnerHTML={{ __html: question.content }}
-                    />
+                    >
+                        {stripHtmlTags(question.content)}
+                    </div>
                     <div className="flex justify-between pt-2">
                         <div className="flex gap-2">
                             {question.tagSlugs.map(slug => (
