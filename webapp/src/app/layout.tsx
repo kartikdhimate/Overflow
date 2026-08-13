@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import Providers from "../components/Providers";
+import "@/app/globals.css";
+import Providers from "@/components/Providers";
 import TopNav from "@/components/nav/TopNav";
 import SideMenu from "@/components/SideMenu";
 
@@ -16,23 +16,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
-        <body className="flex flex-col bg-stone-200 dark:bg-default-50 h-full">
-            <Providers>
-                <TopNav/>
-                <div className="flex grow overflow-auto">
-                  <aside className="basis-1/6 shrink-0 border-r border-neutral-500 pt-20 sticky top-0 px-6">
-                    <SideMenu></SideMenu>
-                  </aside>
-                  <main className="flex-1 pt-20 h-full">
-                    {children}
-                  </main>
-                  <aside className="basis-1/4 shrink-0 px-6 pt-20 bg-stone-300 dark:bg-default-100 sticky top-0">
-                    Right Content
-                  </aside>
-                </div>
-                
-            </Providers>
-        </body>
+      <body className="flex flex-col bg-stone-200 dark:bg-default-50 h-full">
+        <Providers>
+          <TopNav />
+          <div className="flex grow overflow-auto">
+            <aside className="basis-1/6 shrink-0 border-r border-neutral-500 pt-20 sticky top-0 px-6">
+              <SideMenu></SideMenu>
+            </aside>
+            <main className="flex-1 pt-20 h-full">
+              {children}
+            </main>
+            <aside className="basis-1/4 shrink-0 px-6 pt-20 bg-stone-300 dark:bg-default-100 sticky top-0">
+              Right Content
+            </aside>
+          </div>
+
+        </Providers>
+      </body>
     </html>
   );
 }

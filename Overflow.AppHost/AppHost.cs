@@ -16,7 +16,6 @@ var keycloak = builder.AddKeycloak("keycloak", 6001)
     .WithEnvironment("VIRTUAL_PORT", "8080");
 
 var postgres = builder.AddPostgres("postgres", port: 5432)
-    .WithDataVolume("postgres-data")
     .WithPgAdmin();
 
 var typesenseApiKey = builder.AddParameter("typesense-api-key", secret: true);
@@ -67,13 +66,27 @@ var yarp = builder.AddYarp("gateway")
 
 var webapp = builder.AddJavaScriptApp("webapp", "../webapp")
     .WithReference(keycloak)
-    .WithHttpEndpoint(env: "PORT", port: 3000);
+    .WithHttpEndpoint(env: "PORT", port: 3000, targetPort: 4000)
+    .WithEnvironment("VIRTUAL_HOST", "app.overflow.local")
+    .WithEnvironment("VIRTUAL_PORT", "4000")
+    .PublishAsDockerFile();
 
 if (!builder.Environment.IsDevelopment())
 {
     builder.AddContainer("nginx-proxy", "nginxproxy/nginx-proxy", "1.11")
         .WithEndpoint(80, 80, "nginx", isExternal: true)
-        .WithBindMount("/var/run/docker.sock", "/tmp/docker.sock", true);
+        .WithEndpoint(443, 443, "nginx-ssl", isExternal: true)
+        .WithBindMount("/var/run/docker.sock", "/tmp/docker.sock", true)
+        .WithBindMount("../infra/devcerts", "/etc/nginx/certs", true);
+
+    keycloak.WithEnvironment("KC_HOSTNAME", "https://id.overflow.local")
+        .WithEnvironment("KC_HOSTNAME_BACKCHANNEL_DYNAMIC", "true");
+
+    postgres.WithDataVolume("postgres-data-test");
+}
+else
+{
+    postgres.WithDataVolume("postgres-data");
 }
 
 builder.Build().Run();

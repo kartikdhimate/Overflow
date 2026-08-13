@@ -1,0 +1,15 @@
+# Dependencies
+node_modules
+**/node_modules
+ 
+# Next.js output and caches
+.next
+**/.next
+out
+dist
+build
+coverage
+ 
+# Source control
+.git
+.gitignore
