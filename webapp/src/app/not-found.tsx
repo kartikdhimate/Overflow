@@ -1,7 +1,7 @@
 'use client';
 
 import { LinkComponent } from "@/components/LinkComponent";
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 
 export default function NotFound() {
     return (

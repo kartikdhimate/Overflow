@@ -2,7 +2,6 @@ using Common;
 using Microsoft.EntityFrameworkCore;
 using QuestionService.Data;
 using QuestionService.Services;
-using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +20,6 @@ builder.AddNpgsqlDbContext<QuestionDbContext>("questionDb");
 
 await builder.UseWolverineWithRabbitMqAsync(opts =>
 {
-    opts.PublishAllMessages().ToRabbitExchange("questions");
     opts.ApplicationAssembly = typeof(Program).Assembly;
 });
 

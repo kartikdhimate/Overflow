@@ -13,9 +13,6 @@ public class Answer
 
     [MaxLength(50)]
     public required string UserId { get; set; }
-    
-    [MaxLength(300)]
-    public required string UserDisplayName { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

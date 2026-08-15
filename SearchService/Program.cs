@@ -4,7 +4,6 @@ using SearchService.Models;
 using System.Text.RegularExpressions;
 using Typesense;
 using Typesense.Setup;
-using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +30,6 @@ builder.Services.AddTypesenseClient(config =>
 
 await builder.UseWolverineWithRabbitMqAsync(opts =>
 {
-    opts.ListenToRabbitQueue("questions.search", cfg =>
-    {
-        cfg.BindExchange("questions");
-    });
     opts.ApplicationAssembly = typeof(Program).Assembly;
 });
 
