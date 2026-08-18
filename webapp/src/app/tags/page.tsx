@@ -2,8 +2,11 @@ import { getTags } from "@/lib/actions/tag-actions";
 import TagCard from "./TagCard";
 import TagHeader from "./TagHeader";
 
-export default async function Page() {
-    const { data: tags, error } = await getTags();
+type SearchParams = Promise<{ sort?: string }>;
+
+export default async function Page({ searchParams }: { searchParams: SearchParams }) {
+    const { sort } = await searchParams;
+    const { data: tags, error } = await getTags(sort);
 
     if (error) throw error;
 

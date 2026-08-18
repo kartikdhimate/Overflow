@@ -1,10 +1,11 @@
 'use server';
 
-import { Question, Answer, FetchResponse, Profile } from "@/lib/types";
+import { Question, Answer, FetchResponse, Profile, VoteRecord, Vote } from "@/lib/types";
 import type { QuestionSchema } from "@/lib/schemas/questionSchema";
 import { fetchClient } from "@/lib/fetchClient";
 import { AnswerSchema } from "../schemas/answerSchema";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 
 export async function getQuestions(tag?: string): Promise<FetchResponse<Question[]>> {
     let questionUrl = '/questions';
@@ -59,12 +60,28 @@ export async function getQuestionById(id: string): Promise<FetchResponse<Questio
 
     const profileMap = new Map(profiles?.map(profile => [profile.userId, profile]));
 
+    const session = await auth();
+    let voteMap = new Map<string, number>();
+
+    if (session) {
+        const voteUrl = `/votes/${id}`;
+        const { data: votes, error: votesError } = await fetchClient<VoteRecord[]>(voteUrl, 'GET');
+
+        if (votesError) return { data: null, error: { message: 'Failed to fetch votes', status: 500 } };
+
+        voteMap = new Map((votes ?? []).map(vote => [vote.targetId, vote.voteType]));
+    }
+
+    const getUserVote = (targetId: string) => voteMap.get(targetId) ?? 0;
+
     const enriched: Question = {
         ...question,
         author: profileMap.get(question.askerId),
+        userVoted: getUserVote(question.id),
         answers: (question.answers ?? []).map(answer => ({
             ...answer,
-            author: profileMap.get(answer.userId)
+            author: profileMap.get(answer.userId),
+            userVoted: getUserVote(answer.id)
         }))
     }
 
@@ -91,18 +108,33 @@ export async function postAnswer(data: AnswerSchema, questionId: string) {
     const result = await fetchClient<Answer>(`/questions/${questionId}/answers`, 'POST', { body: data });
 
     revalidatePath(`/questions/${questionId}`);
-
     return result;
 }
 
 export async function editAnswer(data: AnswerSchema, questionId: string, answerId: string) {
     const result = await fetchClient(`/questions/${questionId}/answers/${answerId}`, 'PUT', { body: data });
+
     revalidatePath(`/questions/${questionId}`);
     return result;
 }
 
 export async function deleteAnswer(questionId: string, answerId: string) {
     const result = await fetchClient(`/questions/${questionId}/answers/${answerId}`, 'DELETE');
+
     revalidatePath(`/questions/${questionId}`);
+    return result;
+}
+
+export async function acceptAnswer(answerId: string, questionId: string) {
+    const result = await fetchClient(`/questions/${questionId}/answers/${answerId}/accept`, "POST");
+
+    revalidatePath(`/questions/${questionId}`);
+    return result;
+}
+
+export async function addVote(vote: Vote) {
+    const result = await fetchClient(`/votes`, "POST", { body: vote });
+
+    revalidatePath(`/questions/${vote.questionId}`);
     return result;
 }

@@ -2,11 +2,14 @@
   <Folder Name="/common/">
     <Project Path="Common/Common.csproj" Id="44c1ed76-5934-49d7-bfb9-39b9bc55d05a" />
     <Project Path="Contracts/Contracts.csproj" Id="26fed67f-c9f6-4eb2-ae49-50d6bffb4b86" />
+    <Project Path="Reputation/Reputation.csproj" Id="fe6ec3f1-c10b-4627-9526-fd634016901d" />
   </Folder>
   <Folder Name="/services/">
     <Project Path="ProfileService/ProfileService.csproj" Id="d79b1fa2-9d18-43d7-8d46-fcf6a32097d4" />
     <Project Path="QuestionService/QuestionService.csproj" Id="504c678c-ab16-4234-944f-6020c73c2c05" />
     <Project Path="SearchService/SearchService.csproj" Id="380f8b05-3314-4a6b-ae51-7b61c295e963" />
+    <Project Path="StatsService/StatsService.csproj" Id="f92ed101-ccde-401c-adc5-72c6f1158870" />
+    <Project Path="VoteService/VoteService.csproj" Id="bfb91d59-fa1c-4e16-a644-d320edd9e148" />
   </Folder>
   <Project Path="Overflow.AppHost/Overflow.AppHost.csproj" />
   <Project Path="Overflow.ServiceDefaults/Overflow.ServiceDefaults.csproj" />

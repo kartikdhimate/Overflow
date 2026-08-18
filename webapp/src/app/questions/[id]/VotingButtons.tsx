@@ -1,37 +1,103 @@
 'use client';
 
+import { acceptAnswer, addVote } from "@/lib/actions/question-actions";
+import { Answer, Question, Vote } from "@/lib/types";
+import { handleError, successToast } from "@/lib/util";
+import { ArrowDownCircleIcon, ArrowUpCircleIcon, CheckCircleIcon as CheckOutlined } from "@heroicons/react/24/outline";
+import { CheckCircleIcon as CheckSolid } from "@heroicons/react/24/solid";
+import { Button } from "@heroui/button";
+import { useState, useTransition } from "react";
+
 type Props = {
-    accepted?: boolean;
+    target: Question | Answer;
+    currentUserId?: string;
+    askerId?: string;
 };
 
-import { ArrowDownCircleIcon, ArrowUpCircleIcon } from "@heroicons/react/24/outline";
-import { CheckIcon } from "@heroicons/react/24/outline";
-import { Button } from "@heroui/react";
+const isTargetAnswer = (target: Question | Answer): target is Answer => {
+    return "questionId" in target;
+}
 
-export default function VotingButtons({ accepted }: Props) {
+export default function VotingButtons({ target, currentUserId, askerId }: Props) {
+    const [pending, startTransition] = useTransition();
+    const [targetBtn, setTargetBtn] = useState<{ type: "up" | "down", id: string } | null>(null);
+    const isAnswer = isTargetAnswer(target);
+
+    const canVote = isAnswer
+        ? target.userId !== currentUserId && target.userVoted === 0
+        : target.askerId !== currentUserId && target.userVoted === 0;
+
+    const handleAddVote = (value: 1 | -1) => {
+        setTargetBtn(value === 1
+            ? { type: "up", id: target.id }
+            : { type: "down", id: target.id }
+        );
+
+        startTransition(async () => {
+            const vote: Vote = {
+                targetId: target.id,
+                targetType: isAnswer ? "Answer" : "Question",
+                targetUserId: isAnswer ? target.userId : target.askerId,
+                questionId: isAnswer ? target.questionId : target.id,
+                voteValue: value
+            }
+
+            const { error } = await addVote(vote);
+            if (error) handleError(error);
+            else {
+                successToast("Vote has been registered.", "Success");
+                setTargetBtn(null);
+            }
+        })
+    }
+
+    const handleAcceptAnswer = () => {
+        if (!isAnswer || askerId !== currentUserId) return;
+        startTransition(async () => {
+            const { error } = await acceptAnswer(target.id, target.questionId)
+            if (error) handleError(error);
+            else successToast("Answer has been accepted.", "Success");
+        })
+    }
+
     return (
         <div className="shrink-0 flex flex-col gap-3 items-center justify-start mt-4">
+            <Button
+                isIconOnly
+                variant="light"
+                isLoading={pending && targetBtn?.type === "up" && targetBtn.id === target.id}
+                isDisabled={!canVote}
+                onPress={() => handleAddVote(1)}
+            >
+                <ArrowUpCircleIcon className="w-12" />
+            </Button>
+            <span className="text-xl font-semibold">{target.votes}</span>
+            <Button
+                isIconOnly
+                variant="light"
+                isLoading={pending && targetBtn?.type === "down" && targetBtn.id === target.id}
+                isDisabled={!canVote}
+                onPress={() => handleAddVote(-1)}
+            >
+                <ArrowDownCircleIcon className="w-12" />
+            </Button>
+            {isAnswer && (
                 <Button
                     isIconOnly
                     variant="light"
+                    className="disabled:opacity-100"
+                    isDisabled={target.accepted || askerId !== currentUserId}
+                    isLoading={pending && !targetBtn}
+                    onPress={handleAcceptAnswer}
                 >
-                    <ArrowUpCircleIcon className="w-12" />
+                    {target.accepted ? (
+                        <CheckSolid className="text-success" />
+                    ) : (
+                        <CheckOutlined className="size-12 text-default-500" />
+                    )}
+
                 </Button>
-                <span className="text-xl font-semibold">0</span>
-                <Button
-                    isIconOnly
-                    variant="light"
-                >
-                    <ArrowDownCircleIcon className="w-12" />
-                </Button>
-                {accepted && (
-                    <Button
-                        isIconOnly
-                        variant="light"
-                    >
-                        <CheckIcon className="size-12 text-success" strokeWidth={4}/>
-                    </Button>
-                )}
-            </div>
+            )}
+        </div>
     );
 }
