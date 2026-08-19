@@ -129,4 +129,12 @@ The destroy command removes the resources created for the application. Treat it 
 - If a `.overflow.local` address does not open, verify the hosts-file entry and confirm that Docker or Podman is running.
 - If deployment reports missing variables, check that `infra/.env` exists and contains every required key.
 - If HTTPS shows a certificate warning, verify that the certificates in `infra/devcerts` are present and that the Nginx bind-mount path is correct.
+- If HTTPS is not working or the local certificate is not trusted, install [mkcert](https://github.com/FiloSottile/mkcert) with Chocolatey (`choco install mkcert`) or Scoop (`scoop bucket add extras; scoop install mkcert`), then run these commands from the solution folder:
+
+	```powershell
+	mkcert -install
+	mkcert -cert-file infra/devcerts/overflow.local.crt -key-file infra/devcerts/overflow.local.key "*.overflow.local" overflow.local
+	```
+
+	Restart the deployment after generating the certificates. The `mkcert -install` command adds its local CA to the Windows trust store. Keep the generated `rootCA-key.pem` private; these certificates are for local development only.
 - If a service cannot connect to PostgreSQL or RabbitMQ, check `POSTGRES_PASSWORD` and `MESSAGING_PASSWORD`, then restart the deployment.
