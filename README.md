@@ -152,6 +152,10 @@ https://app.overflow.local
 
 Keycloak is available at `https://id.overflow.local`, and the API gateway is available at `https://api.overflow.local`. The Aspire dashboard is available at `http://localhost:8080`.
 
+## Test the APIs
+
+You can test the APIs with [Bruno](https://www.usebruno.com/) or [Postman](https://www.postman.com/). Import the [Bruno collection](aspire_overflow_bruno.yml) or the [Postman collection](aspire_overflow_postman.json), then run the requests against the local or deployed endpoints configured in the collection.
+
 ## Keycloak administrator login
 
 Use `kc-prod` as the Keycloak administrator username and the value of `KEYCLOAK_PASSWORD` as its password.
