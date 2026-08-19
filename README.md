@@ -2,6 +2,56 @@
 
 Overflow is a Stack Overflow-style application built from several .NET services, a Next.js web application, PostgreSQL, RabbitMQ, Typesense, and Keycloak. Aspire builds the application containers and generates the production Docker Compose files.
 
+## Repository structure
+
+The repository is organized by responsibility. The backend is split into small services, while the shared projects contain code used by more than one service.
+
+```text
+Overflow/
+|-- Overflow.AppHost/          Aspire application host and service wiring
+|-- Overflow.ServiceDefaults/  Shared Aspire service defaults and telemetry setup
+|-- Common/                    Shared authentication, database, messaging, and API helpers
+|-- Contracts/                 Events and message contracts shared between services
+|-- Reputation/                Shared reputation rules and calculations
+|-- ProfileService/            User profiles and profile-related message handlers
+|-- QuestionService/           Questions, answers, tags, validation, and question data
+|-- SearchService/             Search indexing and queries backed by Typesense
+|-- StatsService/              Statistics and read-model projections
+|-- VoteService/               Votes and vote-related reputation updates
+|-- webapp/                    Next.js frontend for the Overflow website
+|-- infra/                     Docker Compose output, Keycloak realms, and local TLS certificates
+|-- aspire.config.json         Aspire CLI configuration
+|-- Overflow.slnx              .NET solution file
+`-- README.md                  Setup and deployment instructions
+```
+
+### Backend projects
+
+| Project | Purpose |
+| --- | --- |
+| `Overflow.AppHost` | Defines the distributed application: databases, RabbitMQ, Typesense, Keycloak, backend services, API gateway, frontend, and production proxy. |
+| `Overflow.ServiceDefaults` | Provides common ASP.NET Core and Aspire configuration, including service discovery, resilience, health checks, and OpenTelemetry. |
+| `Common` | Contains reusable application infrastructure such as authentication extensions, pagination, database migration helpers, and Wolverine messaging configuration. |
+| `Contracts` | Defines the messages exchanged through the event bus, including question, vote, answer-count, and reputation events. Keep these types stable because multiple services depend on them. |
+| `Reputation` | Contains the shared reputation logic used when question, answer, and vote events change a user's reputation. |
+| `ProfileService` | Owns profile data and profile-related endpoints and message handlers. |
+| `QuestionService` | Owns questions and answers, including controllers, DTOs, validation, persistence, and message handlers. |
+| `SearchService` | Maintains and queries the Typesense search index in response to application events. |
+| `StatsService` | Builds statistics and projections from events for read-only queries. |
+| `VoteService` | Owns vote data and vote endpoints, then publishes events used by other services. |
+
+Most backend services follow the same internal pattern: `Program.cs` configures the service, `Data/` contains persistence code, `Models/` contains domain or database models, `DTOs/` contains API request and response types, and `MessageHandlers/` processes asynchronous events. Some services also have folders for their specific concerns, such as `Controllers/`, `Validators/`, `Projections/`, or `Middleware/`.
+
+### Frontend and infrastructure
+
+- `webapp/src/app/` contains Next.js routes and pages.
+- `webapp/src/components/` contains reusable UI components.
+- `webapp/src/lib/` contains frontend utilities and shared client-side logic.
+- `webapp/src/auth.ts` and `webapp/src/proxy.ts` contain authentication and request-proxy support.
+- `infra/docker-compose.yaml` is the deployment Compose file generated or updated by Aspire.
+- `infra/realms/` contains the Keycloak realm import used to configure authentication.
+- `infra/devcerts/` contains local HTTPS certificates for the reverse proxy.
+
 ## Prerequisites
 
 Install the following tools before starting the application:
