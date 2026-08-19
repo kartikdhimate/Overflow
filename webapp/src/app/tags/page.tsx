@@ -1,6 +1,6 @@
 import { getTags } from "@/lib/actions/tag-actions";
-import TagCard from "./TagCard";
-import TagHeader from "./TagHeader";
+import TagCard from "@/app/tags/TagCard";
+import TagHeader from "@/app/tags/TagHeader";
 
 type SearchParams = Promise<{ sort?: string }>;
 

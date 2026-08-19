@@ -2,7 +2,7 @@ import { AcademicCapIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import ThemeToggle from "@/components/nav/ThemeToggle";
 import SearchInput from "@/components/nav/SearchInput";
-import LoginButton from "./LoginButton";
+import LoginButton from "@/components/nav/LoginButton";
 import { getCurrentUser } from "@/lib/actions/auth-actions";
 import UserMenu from "@/components/nav/UserMenu";
 import RegisterButton from "@/components/nav/RegisterButton";

@@ -1,17 +1,23 @@
 'use server';
 
-import { Question, Answer, FetchResponse, Profile, VoteRecord, Vote } from "@/lib/types";
+import { Question, Answer, FetchResponse, Profile, VoteRecord, Vote, PaginatedResult, QuestionParams } from "@/lib/types";
 import type { QuestionSchema } from "@/lib/schemas/questionSchema";
 import { fetchClient } from "@/lib/fetchClient";
 import { AnswerSchema } from "../schemas/answerSchema";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 
-export async function getQuestions(tag?: string): Promise<FetchResponse<Question[]>> {
-    let questionUrl = '/questions';
-    if (tag) questionUrl += `?tag=${tag}`;
+export async function getQuestions(qParams?: QuestionParams): Promise<FetchResponse<PaginatedResult<Question>>> {
+    const params = new URLSearchParams();
 
-    const { data: questions, error: questionsError } = await fetchClient<Question[]>(questionUrl, 'GET');
+    if (qParams?.tag) params.set('tag', qParams.tag);
+    if (qParams?.page) params.set('page', qParams.page.toString());
+    if (qParams?.pageSize) params.set('pageSize', qParams.pageSize.toString());
+    if (qParams?.sort) params.set('sort', qParams.sort);
+
+    const questionUrl = `/questions${params ? `?${params.toString()}` : ''}`;
+
+    const { data: questions, error: questionsError } = await fetchClient<PaginatedResult<Question>>(questionUrl, 'GET');
 
     if (!questions || questionsError) {
         return {
@@ -20,8 +26,8 @@ export async function getQuestions(tag?: string): Promise<FetchResponse<Question
         }
     }
 
-    const userIds = Array.from(new Set(questions.map(q => q.askerId)));
-    if (userIds.length === 0) return { data: [] };
+    const userIds = Array.from(new Set(questions.items.map(q => q.askerId)));
+    if (userIds.length === 0) return { data: { items: [], totalCount: 0, page: 0, pageSize: 0 } };
 
     const ids = Array.from(userIds).sort();
     const profilesUrl = "/profiles/batch?" + new URLSearchParams({ ids: ids.join(',') });
@@ -31,12 +37,12 @@ export async function getQuestions(tag?: string): Promise<FetchResponse<Question
 
     const profileMap = new Map(profiles?.map(profile => [profile.userId, profile]));
 
-    const enriched = questions.map(question => ({
+    const enriched = questions.items.map(question => ({
         ...question,
         author: profileMap.get(question.askerId)
     }));
 
-    return { data: enriched };
+    return { data: { items: enriched, totalCount: questions.totalCount, page: questions.page, pageSize: questions.pageSize } };
 }
 
 export async function getQuestionById(id: string): Promise<FetchResponse<Question>> {

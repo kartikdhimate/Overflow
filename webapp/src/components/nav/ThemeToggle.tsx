@@ -1,7 +1,7 @@
 'use client';
 
 import { MoonIcon, SunIcon } from "@heroicons/react/24/solid";
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
