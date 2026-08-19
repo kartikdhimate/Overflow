@@ -36,7 +36,6 @@ export async function fetchClient<T>(
 
     if (!response.ok) {
         if (response.status === 404) return notFound();
-        if (response.status === 500) throw new Error('Server error. Please try again later.');
 
         let message = '';
 
