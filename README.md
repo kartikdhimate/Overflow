@@ -1,6 +1,10 @@
 # Overflow
 
-Overflow is a Stack Overflow-style application built from several .NET services, a Next.js web application, PostgreSQL, RabbitMQ, Typesense, and Keycloak. Aspire builds the application containers and generates the production Docker Compose files.
+## About
+
+Overflow is a modern, distributed Q&A platform inspired by Stack Overflow. It lets users ask and answer questions, search across content, vote, build reputation, and explore community statistics. The application combines independently deployable .NET services with a Next.js frontend, event-driven messaging, PostgreSQL, Typesense, RabbitMQ, Keycloak, and .NET Aspire orchestration.
+
+The project is designed as a practical example of building a full-stack application with service boundaries, asynchronous workflows, authentication, search, projections, and containerized deployment.
 
 ## Repository structure
 
